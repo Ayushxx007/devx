@@ -10,6 +10,8 @@ app.use("/testcase1",(req,res)=> res.send("testcase1"));
 
 app.use("/",(req,res)=> res.send("mahika"));
 
+app.post("testcase2/:username",(req,res)=>res.send("testcase2"));
+
 
 
 
