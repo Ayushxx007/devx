@@ -4,11 +4,19 @@ const app=express();
 
 app.listen(3000);
 
-app.get("/testcase2/:username",(req,res)=>res.send("testcase2"));
+app.get("/:user",(req,res)=>{
+    const params=req.params;
+    const query=req.query;
+    res.json({params:params,
+        query:query}
+    );});
 
-app.use("/testcase1",(req,res)=> res.send("testcase1"));
+  
+   
 
-app.use("/",(req,res)=> res.send("mahika"));
+
+
+
 
 
 // are changes being tracked
