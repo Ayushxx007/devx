@@ -1,0 +1,17 @@
+{
+  "name": "devtin",
+  "version": "1.0.0",
+  "description": "dev",
+  "main": "index.js",
+  "scripts": {
+    "test": "dev"
+  },
+  "keywords": [
+    "dev"
+  ],
+  "author": "ayush",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}
