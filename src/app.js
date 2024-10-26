@@ -68,7 +68,30 @@ app.get("/feed", async(req,res)=>{     // Feed api-- get all the users from data
     }
 
 
-})    ;            
+});    
+
+app.delete("/user",async(req,res)=>{
+
+    const userId=req.body.userId;
+    
+
+    try{
+        const user=await User.findByIdAndDelete({_id:userId});
+
+        res.send("deleted successfully");
+
+
+
+    }catch(err){
+
+        res.status(400).send("something went wrong");
+
+    }
+
+
+});
+
+
 
 
 
