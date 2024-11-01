@@ -22,8 +22,8 @@ app.post("/signup", async (req,res)=>{             // adding data of a user to d
     try{ await  user.save();  // returns a promise 
         res.send("user added successfully");
      }
-     catch{
-            res.status(400).send("user not added successfully");
+     catch(err){
+            res.status(400).send(err+"user not added successfully");
         }
 });
 
@@ -87,22 +87,35 @@ res.status(400).send("something went wrong");
     }
 });
 
-app.patch("/user",async(req,res)=>{       // updating data  in database
+app.patch("/user/:userId",async(req,res)=>{       // updating data  in database
 
+    const userId=req.params?.userId;
     const data=req.body;
-    const userId=req.body.userId;
+
+   
 
  try{
-        await User.findByIdAndUpdate({_id:userId},data);
+
+
+    const allowed=["age","gender","photoUrl","skills","about"];
+    const isAllowed= Object.keys(data).every((k)=>allowed.includes(k));
+    if(!isAllowed){
+        throw new Error("lauda lele ");
+    }
+    if(data.skills.length>10){
+        throw new Error("skills km kr ");
+    }
+
+        await User.findByIdAndUpdate({_id:userId},data,{runValidators:true});
+        
         res.send("updated successfully");
+        
 
  }catch(err){
-        res.status(400).send("something went wrong");
+        res.status(400).send(err+"something went wrong");
  }
 
 });
-
-
 
 
 
