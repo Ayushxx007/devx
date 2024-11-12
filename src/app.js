@@ -115,7 +115,7 @@ app.patch("/user/:userId",async(req,res)=>{       // updating data  in database
         res.status(400).send(err+"something went wrong");
  }
 
-});
+});//devtin
 
 
 
