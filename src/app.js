@@ -1,6 +1,8 @@
 const express=require("express");
 const app=express();
 const {connect}=require("./config/database.js");
+const {validateSignUpData}=require("./utils/validation.js");
+const bcrypt=require("bcrypt");
 
 connect()
 .then(()=>{console.log("connected to cluster");})  // connected to database
@@ -15,16 +17,60 @@ app.use(express.json()) // MiddleWare
 
 app.post("/signup", async (req,res)=>{             // adding data of a user to database
            // express converted req as an object
+           try{
+           //validate the data
+          validateSignUpData(req);
+
+
+
+           // encrypt the password
+           const {firstName,lastName,emailId,password}=req.body;
+           const passwordHash= await bcrypt.hash(password,10);
+
+          
+
 
    
 
-    const user=new User(req.body);  // creating a new instance of a User Model
-    try{ await  user.save();  // returns a promise 
+    const user=new User({firstName,lastName,emailId,password:passwordHash});  // creating a new instance of a User Model
+    await  user.save();  // returns a promise 
         res.send("user added successfully");
      }
      catch(err){
             res.status(400).send(err+"user not added successfully");
         }
+});
+
+app.post("/login",async(req,res)=>{
+
+    try{
+        const {emailId,password}=req.body;
+        
+
+        const user = await User.findOne({emailId:emailId});
+        if(!user){
+            throw new Error("email  not found");
+        }
+
+        const isPasswordValid=await bcrypt.compare(password,user.password);
+
+        if(isPasswordValid){
+            res.send("login successful");
+        }else{
+            throw new Error("incorrect password")
+
+        }
+
+
+
+    }catch(err){
+
+        res.status(400).send(err.message);
+
+
+
+    }
+
 });
 
 app.get("/user", async(req,res)=>{     // get al perticular user from database by emailId
