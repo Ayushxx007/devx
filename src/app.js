@@ -3,7 +3,9 @@ const app=express();
 const {connect}=require("./config/database.js");
 const {validateSignUpData}=require("./utils/validation.js");
 const bcrypt=require("bcrypt");
-
+const cookieParser=require("cookie-parser");
+const jwt=require("jsonwebtoken");
+const {userAuth}=require("./middleware/auth.js");
 connect()
 .then(()=>{console.log("connected to cluster");})  // connected to database
 .catch(()=>{console.log("error occured");});
@@ -13,6 +15,7 @@ app.listen(7777,()=>{console.log("listening");});  // listening after connecting
 const {User}=require("./models/user.js");
 
 app.use(express.json()) // MiddleWare
+app.use(cookieParser());
 
 
 app.post("/signup", async (req,res)=>{             // adding data of a user to database
@@ -55,6 +58,17 @@ app.post("/login",async(req,res)=>{
         const isPasswordValid=await bcrypt.compare(password,user.password);
 
         if(isPasswordValid){
+            const token=await jwt.sign({_id:user._id},"itsasecret");
+            console.log(token);
+
+            //create a jwt token
+
+            // add the token to cookie and send the response to the user
+
+            res.cookie("token",token);
+
+
+
             res.send("login successful");
         }else{
             throw new Error("incorrect password")
@@ -73,7 +87,7 @@ app.post("/login",async(req,res)=>{
 
 });
 
-app.get("/user", async(req,res)=>{     // get al perticular user from database by emailId
+app.get("/user", async(req,res)=>{     // get al perticular user from database by emailId   xx
 
     const email= req.body.emailId;
 
@@ -98,9 +112,30 @@ app.get("/user", async(req,res)=>{     // get al perticular user from database b
 
  
 
-});             
+});         
 
-app.get("/feed", async(req,res)=>{     // Feed api-- get all the users from database
+app.get("/profile",userAuth,async(req,res)=>{
+
+    try{
+
+        const user =req.user;
+        res.send(user);
+       
+       
+      
+    }catch(err){
+
+        res.status(400).send("something went wrong "+err.message);
+
+
+    }
+  
+
+});
+
+
+
+app.get("/feed", async(req,res)=>{     // Feed api-- get all the users from database   xx
 
     try{
         const user=  await User.find({});
@@ -116,7 +151,7 @@ app.get("/feed", async(req,res)=>{     // Feed api-- get all the users from data
 
 });    
 
-app.delete("/user",async(req,res)=>{           // Deleting user from database
+app.delete("/user",async(req,res)=>{           // Deleting user from database    xx
 
 const userId=req.body.userId;
     
@@ -133,7 +168,7 @@ res.status(400).send("something went wrong");
     }
 });
 
-app.patch("/user/:userId",async(req,res)=>{       // updating data  in database
+app.patch("/user/:userId",async(req,res)=>{       // updating data  in database   xx
 
     const userId=req.params?.userId;
     const data=req.body;
