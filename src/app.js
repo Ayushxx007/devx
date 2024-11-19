@@ -18,7 +18,7 @@ app.use(express.json()) // MiddleWare
 app.use(cookieParser());
 
 
-app.post("/signup", async (req,res)=>{             // adding data of a user to database
+app.post("/signup", async (req,res)=>{           // adding data of a user to database   // signup mein we dont need any token
            // express converted req as an object
            try{
            //validate the data
@@ -44,7 +44,7 @@ app.post("/signup", async (req,res)=>{             // adding data of a user to d
         }
 });
 
-app.post("/login",async(req,res)=>{
+app.post("/login",async(req,res)=>{          //  we will generate jwt token in login
 
     try{
         const {emailId,password}=req.body;
@@ -55,17 +55,17 @@ app.post("/login",async(req,res)=>{
             throw new Error("email  not found");
         }
 
-        const isPasswordValid=await bcrypt.compare(password,user.password);
+        const isPasswordValid= await user.validatePassword(password);
 
         if(isPasswordValid){
-            const token=await jwt.sign({_id:user._id},"itsasecret");
-            console.log(token);
+            const token= await user.getJWT();
+           
 
             //create a jwt token
 
             // add the token to cookie and send the response to the user
 
-            res.cookie("token",token);
+            res.cookie("token",token,{expires:new Date(Date.now()+8*360000)});
 
 
 
@@ -86,35 +86,9 @@ app.post("/login",async(req,res)=>{
     }
 
 });
-
-app.get("/user", async(req,res)=>{     // get al perticular user from database by emailId   xx
-
-    const email= req.body.emailId;
-
-    try{
-        const user=  await User.find({emailId:email});
-        if(user.length===0){
-            res.status(404).send("user not found");
-
-        }else{
-
-            res.send(user);
-
-        }
   
 
-    }catch(err){
-
-        res.status(400).send("something went wrong");
-
-    
-    }
-
- 
-
-});         
-
-app.get("/profile",userAuth,async(req,res)=>{
+app.get("/profile",userAuth,async(req,res)=>{        //   userAuth middleware
 
     try{
 
@@ -134,69 +108,14 @@ app.get("/profile",userAuth,async(req,res)=>{
 });
 
 
-
-app.get("/feed", async(req,res)=>{     // Feed api-- get all the users from database   xx
-
-    try{
-        const user=  await User.find({});
-        res.send(user);
-
-    }catch(err){
-
-        res.status(400).send("something went wrong");
-
-
-    }
-
-
-});    
-
-app.delete("/user",async(req,res)=>{           // Deleting user from database    xx
-
-const userId=req.body.userId;
+app.post("/sendConnectionRequest",userAuth,async(req,res)=>{
+    res.send(req.user.firstName);
+    // sending a connection request
     
 
-try{
-    const user=await User.findByIdAndDelete({_id:userId});
 
-    res.send("deleted successfully");
-
-}catch(err){
-
-res.status(400).send("something went wrong");
-
-    }
 });
 
-app.patch("/user/:userId",async(req,res)=>{       // updating data  in database   xx
-
-    const userId=req.params?.userId;
-    const data=req.body;
-
-   
-
- try{
-
-
-    const allowed=["age","gender","photoUrl","skills","about"];
-    const isAllowed= Object.keys(data).every((k)=>allowed.includes(k));
-    if(!isAllowed){
-        throw new Error("lauda lele ");
-    }
-    if(data.skills.length>10){
-        throw new Error("skills km kr ");
-    }
-
-        await User.findByIdAndUpdate({_id:userId},data,{runValidators:true});
-        
-        res.send("updated successfully");
-        
-
- }catch(err){
-        res.status(400).send(err+"something went wrong");
- }
-
-});//devtin
 
 
 
