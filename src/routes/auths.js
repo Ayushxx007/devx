@@ -36,6 +36,10 @@ authRouter.post("/login",async(req,res)=>{          //  we will generate jwt tok
 
     try{
         const {emailId,password}=req.body;
+
+        if(!password){
+            throw new Error("password is required");
+        }
         
 
         const user = await User.findOne({emailId:emailId});
@@ -72,6 +76,25 @@ authRouter.post("/login",async(req,res)=>{          //  we will generate jwt tok
 
 
     }
+
+});
+
+authRouter.post("/logout",(req,res)=>{
+
+    try{
+        res.cookie("token",null,{expires:new Date(Date.now())}).send("logout successful");
+    }
+    catch(err){
+
+        res.send(err.message);
+    }
+
+
+   
+    
+
+   
+
 
 });
 
