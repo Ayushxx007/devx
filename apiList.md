@@ -9,13 +9,14 @@
 -POST/logout
 
 ## profileRouter
--GET/Profile/view
+-GET/Profile/view   
 -PATCH/Profile/edit
--PATCH/Profile/password
+-PATCH/Profile/password    // todo
 
 
 ## connectionRequestRouter
--POST/request/send/intrested/:userId
+-POST/request/send/interested/:userId  
+                                      -POST/request/send/:status/:userId
 -POST/request/send/ignored/:userId
                                                               // Status:ignore,intrested,accepted,rejected
 -POST/request/review/accepted/:requestId

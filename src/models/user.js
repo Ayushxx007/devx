@@ -44,12 +44,16 @@ const schema= new mongoose.Schema({
     },
     gender:{
         type:String,
-        validate(value){
-            if(!["male","female","others"].includes(value)){
-                throw new error("gender not valid");
-            }
-
+        enum:{
+            values:["male","female","other"],
+            message:"invalid gender"
         }
+        // validate(value){
+        //     if(!["male","female","others"].includes(value)){
+        //         throw new error("gender not valid");
+        //     }
+
+        // }
 
     },
     photoUrl:{
@@ -74,6 +78,12 @@ const schema= new mongoose.Schema({
 
     
 },{timestamps:true});
+
+
+
+schema.index({firstname:1,lastName:1});
+
+
 
 schema.methods.getJWT= async function(){
 
