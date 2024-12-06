@@ -97,6 +97,8 @@ return token;
 
 }
 
+
+
 schema.methods.validatePassword=async function(passwordInputByUser){
     const user=this;
 

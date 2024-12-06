@@ -5,14 +5,9 @@ const ConnectionRequest = require("../models/connectionRequest.js");
 const {User}=require("../models/user.js");
 
 
-
-
-
-
 requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
 
-
-
+    
 try{
     const fromUserId=req.user._id;
     const toUserId=req.params.toUserId;
@@ -41,12 +36,6 @@ try{
     };
 
 
-   
-
-
-
-
-
 
     // if the toUserId is an existing userId in the database, then we can send the request
 
@@ -54,10 +43,6 @@ try{
     if(!toUser){
       throw new Error("User not found");
 }
-
-
-
-
 
 
 
@@ -74,12 +59,9 @@ try{
    });
 
 
-
-
 }catch(err){
 
     res.status(400).send(err.message);
-
 
 
 
@@ -87,21 +69,51 @@ try{
 
 
 
-
-
-
-
-
-  
-  
-    
-
-
 });
 
 
+requestRouter.post("/request/review/:status/:requestId",userAuth,async(req,res)=>{
+
+  try{
 
 
+    const loggedInUser=req.user;
+    const {status,requestId}=req.params;
+    const allowedStatus=["accepted","rejected"];
+
+    if(!allowedStatus.includes(status)){     // Validate the status  
+
+        throw new Error("Invalid status");
+
+    }
+    const connectionRequest= await ConnectionRequest.findOne({
+        _id:requestId,
+        toUserId:loggedInUser,
+        status:"interested"
+
+    });
+    if(!connectionRequest){
+        throw new Error("Connection request not found");
+    }
+
+    connectionRequest.status=status;
+
+   const data = await connectionRequest.save();
+
+   res.json({message:"connection request"+" "+status+" "+"successfully",data});
+
+
+
+  }catch(err){
+
+    res.status(400).send(err.message);
+
+
+  }
+
+
+
+})
 
 
 module.exports=requestRouter;

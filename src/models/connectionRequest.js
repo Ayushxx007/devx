@@ -1,13 +1,16 @@
 const mongoose=require("mongoose");
+const {User}=require("./user.js")
 const connectionRequestSchema =new mongoose.Schema({      // Schema of new collection
 
     fromUserId:{
         type:mongoose.Schema.Types.ObjectId,
-        required:true
+        required:true,
+        ref:"user"    // refrence to the User collection
     },
     toUserId:{
         type:mongoose.Schema.Types.ObjectId,
-        required:true
+        required:true,
+        ref:"user" 
     },
 
     status:{
@@ -45,14 +48,6 @@ connectionRequestSchema.pre("save", function(next){
 
    
    
-
-
-
-
-
-
-
-
 
 
 const ConnectionRequestModel= new mongoose.model("ConnectionRequest",connectionRequestSchema);      

@@ -12,14 +12,9 @@ authRouter.post("/signup", async (req,res)=>{           // adding data of a user
    validateSignUpData(req);
 
 
-
     // encrypt the password
     const {firstName,lastName,emailId,password}=req.body;
     const passwordHash= await bcrypt.hash(password,10);
-
-   
-
-
 
 
 const user=new User({firstName,lastName,emailId,password:passwordHash});  // creating a new instance of a User Model
@@ -50,6 +45,7 @@ authRouter.post("/login",async(req,res)=>{          //  we will generate jwt tok
         const isPasswordValid= await user.validatePassword(password);
 
         if(isPasswordValid){
+
             const token= await user.getJWT();
            
 
@@ -59,9 +55,8 @@ authRouter.post("/login",async(req,res)=>{          //  we will generate jwt tok
 
             res.cookie("token",token,{expires:new Date(Date.now()+8*360000)});
 
-
-
             res.send("login successful");
+            
         }else{
             throw new Error("incorrect password")
 

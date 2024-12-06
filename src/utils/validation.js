@@ -26,15 +26,7 @@ const validateProfileData=(req)=>{
 
 
 
-
-
-
-
-
 };
-
-
-
 
 
 
